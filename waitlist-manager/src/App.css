@@ -1,0 +1,331 @@
+/* App.css - 演出候补递补管理系统样式 */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== 动画 ===== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-12px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease-out forwards;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.2s ease-out forwards;
+}
+
+/* ===== Modal 背景动画 ===== */
+.modal-backdrop {
+  animation: fadeIn 0.15s ease-out;
+}
+
+.modal-content {
+  animation: scaleIn 0.2s ease-out;
+}
+
+/* ===== 表格样式 ===== */
+table {
+  border-spacing: 0;
+  width: 100%;
+}
+
+th, td {
+  text-align: left;
+}
+
+/* 表格行悬停与拖拽状态 */
+.table-row {
+  transition: all 0.15s ease;
+}
+
+.table-row:hover {
+  background-color: #f8fafc;
+}
+
+.table-row.dragging {
+  opacity: 0.4;
+  background-color: #eff6ff;
+  border-left: 3px solid #3b82f6;
+}
+
+.table-row.drag-over {
+  background-color: #dbeafe;
+  box-shadow: inset 0 0 0 2px #93c5fd;
+}
+
+/* ===== Drop Zone 样式 ===== */
+.drop-zone {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.drop-zone::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.15) 50%, transparent 60%);
+  transform: translateX(-100%);
+  transition: transform 0.5s;
+}
+
+.drop-zone:hover::before {
+  transform: translateX(100%);
+}
+
+.drop-zone-active {
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6) !important;
+  color: white !important;
+  border-color: transparent !important;
+  transform: scale(1.05);
+  box-shadow: 0 8px 25px -5px rgba(59, 130, 246, 0.4);
+}
+
+/* ===== 卡片样式 ===== */
+.show-card {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.show-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.1);
+}
+
+.show-card::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  border-radius: 3px 0 0 3px;
+  background: linear-gradient(to bottom, #3b82f6, #8b5cf6);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.show-card:hover::after {
+  opacity: 1;
+}
+
+/* ===== 统计数字动画 ===== */
+.stat-number {
+  display: inline-block;
+  transition: transform 0.2s;
+}
+
+.stat-number:hover {
+  transform: scale(1.2);
+}
+
+/* ===== 状态标签 ===== */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.status-waiting {
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  color: #92400e;
+}
+
+.status-assigned {
+  background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+  color: #065f46;
+}
+
+/* ===== 按钮 ===== */
+button {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+button:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Primary Button */
+.btn-primary {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 10px;
+  font-weight: 500;
+  font-size: 14px;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
+  transform: translateY(-1px);
+}
+
+/* Secondary Button */
+.btn-secondary {
+  background: white;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+  padding: 8px 20px;
+  border-radius: 10px;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.btn-secondary:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+}
+
+/* Danger Button */
+.btn-danger {
+  background: white;
+  color: #ef4444;
+  border: 1px solid #fecaca;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-weight: 500;
+  font-size: 13px;
+}
+
+.btn-danger:hover {
+  background: #fef2f2;
+  border-color: #fca5a5;
+}
+
+/* ===== 输入框 ===== */
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  ring: 2px solid #93c5fd;
+  border-color: #3b82f6 !important;
+}
+
+input::placeholder {
+  color: #9ca3af;
+}
+
+/* ===== 滚动条 ===== */
+.overflow-x-auto::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 10px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ===== 空状态 ===== */
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  color: #9ca3af;
+}
+
+.empty-state-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+  opacity: 0.5;
+}
+
+/* ===== 响应式 ===== */
+@media (max-width: 1280px) {
+  .xl\:col-span-3,
+  .xl\:col-span-2 {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .hidden.md\:flex {
+    display: none !important;
+  }
+
+  nav > div {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+}
+
+/* ===== 工具提示 ===== */
+.tooltip {
+  position: relative;
+}
+
+.tooltip::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-4px);
+  background: #1f2937;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.tooltip:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-8px);
+}

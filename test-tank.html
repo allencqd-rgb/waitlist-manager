@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>坦克贴图测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f0f0;
+            padding: 20px;
+        }
+        canvas {
+            border: 2px solid #333;
+            background: #000;
+        }
+        .info {
+            margin-top: 20px;
+            padding: 10px;
+            background: #fff;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>坦克贴图测试</h1>
+    <canvas id="testCanvas" width="400" height="400"></canvas>
+    <div class="info">
+        <p>这个页面测试坦克贴图生成是否正确。</p>
+        <p>如果看到绿色和红色的坦克形状，说明贴图生成成功。</p>
+    </div>
+    
+    <script>
+        const canvas = document.getElementById('testCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 生成坦克贴图
+        function generateTankImage(bodyColor, turretColor, direction) {
+            const tankCanvas = document.createElement('canvas');
+            tankCanvas.width = 40;
+            tankCanvas.height = 40;
+            const tankCtx = tankCanvas.getContext('2d');
+            
+            // 根据方向旋转画布
+            tankCtx.save();
+            tankCtx.translate(20, 20);
+            const rotations = { 'up': 0, 'right': Math.PI/2, 'down': Math.PI, 'left': -Math.PI/2 };
+            tankCtx.rotate(rotations[direction]);
+            
+            // 坦克主体
+            tankCtx.fillStyle = bodyColor;
+            tankCtx.fillRect(-20, -20, 40, 40);
+            
+            // 坦克履带
+            tankCtx.fillStyle = '#333';
+            tankCtx.fillRect(-22, -20, 4, 40);
+            tankCtx.fillRect(18, -20, 4, 40);
+            
+            // 坦克炮塔
+            tankCtx.fillStyle = turretColor;
+            tankCtx.fillRect(-5, -20, 10, 15);
+            
+            tankCtx.restore();
+            
+            return tankCanvas.toDataURL();
+        }
+        
+        // 测试绘制
+        const directions = ['up', 'right', 'down', 'left'];
+        
+        // 绘制玩家坦克（绿色）
+        ctx.fillStyle = '#FFF';
+        ctx.fillText('玩家坦克（绿色）:', 10, 20);
+        directions.forEach((dir, index) => {
+            const dataUrl = generateTankImage('#4CAF50', '#2E7D32', dir);
+            const img = new Image();
+            img.onload = () => {
+                ctx.drawImage(img, 10 + index * 50, 30, 40, 40);
+                ctx.fillStyle = '#FFF';
+                ctx.fillText(dir, 10 + index * 50 + 5, 80);
+            };
+            img.src = dataUrl;
+        });
+        
+        // 绘制敌人坦克（红色）
+        ctx.fillStyle = '#FFF';
+        ctx.fillText('敌人坦克（红色）:', 10, 120);
+        directions.forEach((dir, index) => {
+            const dataUrl = generateTankImage('#F44336', '#C62828', dir);
+            const img = new Image();
+            img.onload = () => {
+                ctx.drawImage(img, 10 + index * 50, 130, 40, 40);
+                ctx.fillStyle = '#FFF';
+                ctx.fillText(dir, 10 + index * 50 + 5, 180);
+            };
+            img.src = dataUrl;
+        });
+        
+        // 测试在游戏中实际使用
+        ctx.fillStyle = '#FFF';
+        ctx.fillText('游戏实际效果（带无敌闪光）:', 10, 220);
+        
+        // 绘制一个带无敌效果的坦克
+        const testImg = new Image();
+        const dataUrl = generateTankImage('#4CAF50', '#2E7D32', 'up');
+        testImg.onload = () => {
+            ctx.drawImage(testImg, 10, 230, 40, 40);
+            
+            // 绘制无敌效果
+            ctx.strokeStyle = '#FFD700';
+            ctx.lineWidth = 3;
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            ctx.arc(30, 250, 25, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.setLineDash([]);
+        };
+        testImg.src = dataUrl;
+        
+    </script>
+</body>
+</html>

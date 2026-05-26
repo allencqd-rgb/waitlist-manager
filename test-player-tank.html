@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>玩家坦克贴图测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f0f0;
+            padding: 20px;
+        }
+        canvas {
+            border: 2px solid #333;
+            background: #000;
+            margin: 10px;
+        }
+        .info {
+            margin-top: 20px;
+            padding: 15px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        h1 { color: #333; }
+        .success { color: green; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>🎮 玩家坦克贴图测试</h1>
+    
+    <canvas id="testCanvas" width="400" height="200"></canvas>
+    
+    <div class="info">
+        <p><span class="success">✅ 测试结果：</span></p>
+        <ul>
+            <li>如果看到儿童照片显示在坦克位置上，说明贴图加载成功！</li>
+            <li>4个方向的照片应该都正确旋转</li>
+            <li>绿色边框表示这是玩家坦克</li>
+        </ul>
+        <p><strong>下一步：</strong></p>
+        <ol>
+            <li>打开 tank-battle.html 游戏文件</li>
+            <li>玩家坦克现在会显示为儿童照片</li>
+            <li>敌人坦克仍然是红色几何图形</li>
+        </ol>
+    </div>
+    
+    <script>
+        const canvas = document.getElementById('testCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 加载用户上传的儿童照片
+        const playerImage = new Image();
+        playerImage.crossOrigin = 'anonymous';
+        playerImage.src = 'tank_player.png';
+        
+        const directions = ['up', 'right', 'down', 'left'];
+        let loadedCount = 0;
+        
+        playerImage.onload = function() {
+            console.log('玩家图片加载成功');
+            
+            // 为每个方向绘制旋转后的照片
+            directions.forEach((dir, index) => {
+                const x = 20 + index * 90;
+                const y = 20;
+                
+                // 绘制背景（坦克底座）
+                ctx.fillStyle = '#4CAF50';
+                ctx.fillRect(x, y, 40, 40);
+                
+                // 绘制圆形裁剪区域
+                ctx.save();
+                ctx.translate(x + 20, y + 20);
+                
+                const rotations = { 'up': 0, 'right': Math.PI/2, 'down': Math.PI, 'left': -Math.PI/2 };
+                ctx.rotate(rotations[dir]);
+                
+                // 圆形裁剪
+                ctx.beginPath();
+                ctx.arc(0, 0, 18, 0, Math.PI * 2);
+                ctx.clip();
+                
+                // 绘制照片
+                ctx.drawImage(playerImage, -18, -18, 36, 36);
+                
+                ctx.restore();
+                
+                // 添加边框
+                ctx.strokeStyle = '#2E7D32';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(x, y, 40, 40);
+                
+                // 标注方向
+                ctx.fillStyle = '#FFF';
+                ctx.font = '12px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(dir, x + 20, y + 55);
+                
+                loadedCount++;
+                if (loadedCount === 4) {
+                    console.log('所有方向渲染完成');
+                }
+            });
+            
+            // 绘制说明文字
+            ctx.fillStyle = '#FFF';
+            ctx.font = '14px Arial';
+            ctx.fillText('玩家坦克（儿童照片）- 4个方向', 200, 150);
+        };
+        
+        playerImage.onerror = function() {
+            console.error('玩家图片加载失败');
+            ctx.fillStyle = '#F44336';
+            ctx.font = '16px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('❌ 图片加载失败！请确保 tank_player.png 文件存在', 200, 100);
+        };
+    </script>
+</body>
+</html>
