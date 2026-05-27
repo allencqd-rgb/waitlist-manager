@@ -143,20 +143,11 @@ function App() {
     return 0;
   });
 
-  // 筛选
-  let filteredEntries = sortedEntries.filter((entry) => {
-    if (filter.演出名称 && !entry.演出名称.includes(filter.演出名称)) return false;
-    if (filter.城市 && !entry.城市.includes(filter.城市)) return false;
-    if (filter.状态 === 'waiting' && entry.状态 !== '候补中') return false;
-    if (filter.状态 === 'assigned' && entry.状态 !== '已递补') return false;
-    return true;
-  });
-
-  // 取第一志愿：每个工号只保留最早的一条候补记录
+  // 取第一志愿：每个工号只保留最早的一条候补记录（基于全量数据，不受搜索影响）
   const firstChoiceEntries = firstChoiceMode ? (() => {
     const empMap = new Map();
     // 按候补创建时间排序，最早的先入 map，后面同工号的被跳过
-    const sortedByTime = [...filteredEntries]
+    const sortedByTime = [...sortedEntries]
       .filter(e => e.状态 === '候补中')
       .sort((a, b) => new Date(a.候补创建时间 || 0) - new Date(b.候补创建时间 || 0));
     sortedByTime.forEach(e => {
@@ -165,12 +156,22 @@ function App() {
       }
     });
     // 已递补记录不受第一志愿筛选影响，全部保留
-    const assignedEntries = filteredEntries.filter(e => e.状态 === '已递补');
+    const assignedEntries = sortedEntries.filter(e => e.状态 === '已递补');
     return [...Array.from(empMap.values()), ...assignedEntries];
   })() : null;
 
+  // 筛选：第一志愿模式下基于 firstChoiceEntries 搜索，否则基于全量 sortedEntries
+  const baseEntries = firstChoiceMode ? firstChoiceEntries : sortedEntries;
+  let filteredEntries = baseEntries.filter((entry) => {
+    if (filter.演出名称 && !entry.演出名称.includes(filter.演出名称)) return false;
+    if (filter.城市 && !entry.城市.includes(filter.城市)) return false;
+    if (filter.状态 === 'waiting' && entry.状态 !== '候补中') return false;
+    if (filter.状态 === 'assigned' && entry.状态 !== '已递补') return false;
+    return true;
+  });
+
   // 最终展示数据
-  const displayEntries = firstChoiceMode ? firstChoiceEntries : filteredEntries;
+  const displayEntries = filteredEntries;
 
   // 左侧表格用的剧目列表（排除已删除的）
   const showCombinations = getShowCombinations(entries).filter(
