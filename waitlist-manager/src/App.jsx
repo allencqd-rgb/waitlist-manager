@@ -170,7 +170,7 @@ function App() {
   })() : null;
 
   // 最终展示数据
-  const displayEntries = firstChoiceMode ? (firstChoiceEntries || filteredEntries) : filteredEntries;
+  const displayEntries = firstChoiceMode ? firstChoiceEntries : filteredEntries;
 
   // 左侧表格用的剧目列表（排除已删除的）
   const showCombinations = getShowCombinations(entries).filter(
