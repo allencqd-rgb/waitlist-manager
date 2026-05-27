@@ -147,9 +147,25 @@ function App() {
   const firstChoiceEntries = firstChoiceMode ? (() => {
     const empMap = new Map();
     // 按候补创建时间排序，最早的先入 map，后面同工号的被跳过
-    const sortedByTime = [...sortedEntries]
-      .filter(e => e.状态 === '候补中')
-      .sort((a, b) => new Date(a.候补创建时间 || 0) - new Date(b.候补创建时间 || 0));
+    const waitingEntries = sortedEntries.filter(e => e.状态 === '候补中');
+    console.log('[firstChoiceEntries] 候补中记录总数:', waitingEntries.length);
+    
+    // 先按时间排序，时间相同则按原数组顺序（稳定排序）
+    const sortedByTime = [...waitingEntries].sort((a, b) => {
+      const timeA = new Date(a.候补创建时间 || 0).getTime();
+      const timeB = new Date(b.候补创建时间 || 0).getTime();
+      if (timeA !== timeB) return timeA - timeB;
+      // 时间相同，按原数组索引排序（稳定）
+      return waitingEntries.indexOf(a) - waitingEntries.indexOf(b);
+    });
+    
+    console.log('[firstChoiceEntries] 排序后前10条:', sortedByTime.slice(0, 10).map(e => ({
+      工号: e.工号,
+      演出: e.演出名称,
+      时间: e.候补创建时间,
+      时间戳: new Date(e.候补创建时间 || 0).getTime()
+    })));
+    
     sortedByTime.forEach(e => {
       if (!empMap.has(e.工号)) {
         empMap.set(e.工号, e);
@@ -158,10 +174,7 @@ function App() {
     // 已递补记录不受第一志愿筛选影响，全部保留
     const assignedEntries = sortedEntries.filter(e => e.状态 === '已递补');
     const result = [...Array.from(empMap.values()), ...assignedEntries];
-    console.log('[firstChoiceEntries] 候补中+已递补记录数:', result.length, 'empMap size:', empMap.size, 'assignedEntries:', assignedEntries.length);
-    empMap.forEach((value, key) => {
-      console.log('[firstChoiceEntries] 工号:', key, '演出:', value.演出名称, '时间:', value.候补创建时间);
-    });
+    console.log('[firstChoiceEntries] 最终结果数:', result.length, 'empMap size:', empMap.size);
     return result;
   })() : null;
 
