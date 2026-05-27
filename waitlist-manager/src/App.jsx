@@ -157,11 +157,17 @@ function App() {
     });
     // 已递补记录不受第一志愿筛选影响，全部保留
     const assignedEntries = sortedEntries.filter(e => e.状态 === '已递补');
-    return [...Array.from(empMap.values()), ...assignedEntries];
+    const result = [...Array.from(empMap.values()), ...assignedEntries];
+    console.log('[firstChoiceEntries] 候补中+已递补记录数:', result.length, 'empMap size:', empMap.size, 'assignedEntries:', assignedEntries.length);
+    empMap.forEach((value, key) => {
+      console.log('[firstChoiceEntries] 工号:', key, '演出:', value.演出名称, '时间:', value.候补创建时间);
+    });
+    return result;
   })() : null;
 
   // 筛选：第一志愿模式下基于 firstChoiceEntries 搜索，否则基于全量 sortedEntries
   const baseEntries = firstChoiceMode ? firstChoiceEntries : sortedEntries;
+  console.log('[baseEntries] firstChoiceMode:', firstChoiceMode, 'baseEntries length:', baseEntries?.length || sortedEntries.length);
   let filteredEntries = baseEntries.filter((entry) => {
     if (filter.演出名称 && !entry.演出名称.includes(filter.演出名称)) return false;
     if (filter.城市 && !entry.城市.includes(filter.城市)) return false;
@@ -169,6 +175,7 @@ function App() {
     if (filter.状态 === 'assigned' && entry.状态 !== '已递补') return false;
     return true;
   });
+  console.log('[filteredEntries] 搜索条件:', filter, '结果数:', filteredEntries.length);
 
   // 最终展示数据
   const displayEntries = filteredEntries;
